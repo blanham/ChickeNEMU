@@ -1,0 +1,2 @@
+video.o: video.c video.h
+util.o: util.c util.h
