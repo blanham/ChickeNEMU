@@ -1,9 +1,12 @@
 CC=gcc
+
 SOURCES=video.c util.c blip-buf/blip_buf.c 
-OBJECTS=$(SOURCES:.c=.o)
 EXECUTABLE=libchicken.a
 
-CFLAGS = -fPIC -c -Wall -std=gnu99
+OBJDIR = obj
+OBJECTS=$(addprefix $(OBJDIR)/,$(SOURCES:.c=.o) )
+
+CFLAGS = -fPIC -Wall -std=gnu99
 SDLFLAGS=`sdl-config --cflags --libs`
 
 UNAME := $(shell uname)
@@ -15,13 +18,17 @@ endif
 
 all: $(SOURCES) $(EXECUTABLE)
 
+#.c.o:
+#	$(CC) $(CFLAGS) $< -o $@
+
+$(OBJDIR) obj/%.o: %.c 
+	$(CC) -c $(CFLAGS) $< -o $@
+
 $(EXECUTABLE): $(OBJECTS)
 	libtool -o $(EXECUTABLE) -static $(OBJECTS)
 #	$(CC) $(OBJECTS) $(SDLFLAGS) -o $@
 	
 
-.c.o:
-	$(CC) $(CFLAGS) $< -o $@
 
 depend: .depend
 
