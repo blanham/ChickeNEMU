@@ -1,6 +1,6 @@
 CC=gcc
 
-SOURCES=video.c util.c blip-buf/blip_buf.c 
+SOURCES=audio.c video.c util.c blip-buf/blip_buf.c 
 EXECUTABLE=libchicken.a
 
 OBJDIR = obj
