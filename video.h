@@ -26,3 +26,4 @@ typedef struct {
 
 Screen *screen_init(char *name, int subsystems, int width, int height, int bpp, int scale);
 
+int screen_draw(Screen *screen);

@@ -37,14 +37,16 @@ Screen *screen_init(char *name, int subsystems, int height, int width, int bpp, 
 			screen_bpp = 32;
 			break;
 	}
+    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, screen_bpp);
 	
 	new->bpp = bpp;
 	new->height = height;
 	new->width = width;
 	new->angle = 0.25f;
 	/* only correct for 8 byte pixels at the moment */
-	new->vram = malloc(height*width*5);	
-	memset(new->vram, 0xFF, height*width*5);
+	new->vram = malloc(height*width*4);	
+	memset(new->vram, 0xFF, height*width);
+
 	new->window = SDL_CreateWindow(name,
 		SDL_WINDOWPOS_CENTERED,
 		SDL_WINDOWPOS_CENTERED,
@@ -79,7 +81,7 @@ Screen *screen_init(char *name, int subsystems, int height, int width, int bpp, 
 	glViewport(0, 0, width, height);
 
 	glClear(GL_COLOR_BUFFER_BIT);
-//	glDisable(GL_DEPTH_TEST);
+	glDisable(GL_DEPTH_TEST);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
@@ -104,26 +106,17 @@ Screen *screen_init(char *name, int subsystems, int height, int width, int bpp, 
 }
 
 
-int draw_buffer(Screen *screen)
+int screen_draw(Screen *screen)
 {
 	glBindTexture(GL_TEXTURE_2D, screen->texture);
-	screen->vram = malloc(screen->height*screen->width*4);
-	memset(screen->vram,0x50, screen->height*screen->width*4);
-	for(int i=0;i < 224; i++)
-	{
-		for(int j = 0; j < 256; j++)
-		{
-			screen->vram[i*224+j] = i;
-		}
-	}	
 	glClear(GL_COLOR_BUFFER_BIT);
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, screen->height, screen->width, 0, GL_RGBA, GL_UNSIGNED_BYTE, screen->vram);
 			glBindTexture(GL_TEXTURE_2D, screen->texture);
 			glBegin(GL_QUADS);
 				glTexCoord2d(0,1); glVertex2i(0, 0);
-				glTexCoord2d(0,0); glVertex2i(0, 256);
-				glTexCoord2d(1,0); glVertex2i(224, 256);
-				glTexCoord2d(1,1); glVertex2i(224, 0);
+				glTexCoord2d(0,0); glVertex2i(0, screen->width);
+				glTexCoord2d(1,0); glVertex2i(screen->width, screen->height);
+				glTexCoord2d(1,1); glVertex2i(screen->height, 0);
 			glEnd();
 			SDL_GL_SwapBuffers();
 			SDL_GL_SwapWindow(screen->window);
