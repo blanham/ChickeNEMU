@@ -1,18 +1,18 @@
 CC=gcc
 
-SOURCES=audio.c video.c util.c blip-buf/blip_buf.c ioapi.c unzip.c 
+SOURCES=audio.c video.c util.c blip-buf/blip_buf.c 
 EXECUTABLE=libchicken.a
 
 OBJDIR = obj
 OBJECTS=$(addprefix $(OBJDIR)/,$(SOURCES:.c=.o) )
 
-CFLAGS = -fPIC -Wall -std=gnu99
+CFLAGS = -fPIC -Wall -std=gnu99 
 SDLFLAGS=`sdl-config --cflags --libs`
 
 UNAME := $(shell uname)
 ifeq ($(UNAME), Darwin)
-SDLFLAGS += -arch i386 -framework OpenGL -framework Cocoa 
-CFLAGS += -arch i386
+SDLFLAGS +=  -framework OpenGL -framework Cocoa 
+CFLAGS +=  
 endif
 
 
@@ -27,7 +27,10 @@ $(OBJDIR) obj/%.o: %.c
 $(EXECUTABLE): $(OBJECTS)
 	libtool -o $(EXECUTABLE) -static $(OBJECTS)
 #	$(CC) $(OBJECTS) $(SDLFLAGS) -o $@
-	
+
+test:
+	$(CC) -c $(CFLAGS) main.c -o main.o;\
+	$(CC)  $(CFLAGS) -lz libchicken.a main.o -o test
 
 
 depend: .depend

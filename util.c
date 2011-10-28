@@ -1,5 +1,10 @@
 #include <stdio.h>
-#include "util.h"
+#include <strings.h>
+#include <ctype.h>
+#include <assert.h>
+#include "unzip.h"
+#include "libchicken.h"
+
 int memory_dump(char *filename, uint8_t *pointer, size_t length, size_t offset)
 {
 	FILE *fp = fopen(filename, "wb+");
@@ -7,38 +12,62 @@ int memory_dump(char *filename, uint8_t *pointer, size_t length, size_t offset)
 	fclose(fp);
 }
 
-int rom_load(char *filename, uint8_t *pointer, size_t size, size_t offset)
+void flags_print(char *string, size_t length, uint32_t value)
 {
-	FILE *fp;
-	fp = fopen(filename,"rb");
+	int i;
+	assert(strlen(string) == length);
+	for(i = 0; i < length; i++)
+	{
+		char print;
+		if(value & (0x1 << (length-i)))
+		{
+			print = toupper(string[i]);
+		}
+		else
+		{
+			
+			print = tolower(string[i]);
+		}
+		fprintf(stderr, "%c", print); 
+
+
+
+	}
+
+
+
+}
+//TODO: add path argument
+size_t rom_load(char *filename, uint8_t *pointer, size_t size, size_t offset)
+{
+	size_t ret;
+
+	FILE *fp = fopen(filename,"rb");
 	if(fp == NULL)
 	{
 		fprintf(stderr, "Couldn't open file: %s\n",filename);
 		return -1;
 	}
-	fread(&pointer[offset], 1, size, fp);
+	ret = fread(&pointer[offset], 1, size, fp);
 	fclose(fp);
-	return 0;
+
+	return ret;
 }
-
-/*
-int loadROM()
+//TODO
+size_t rom_load_zip(char *filename, char *zipfile, uint8_t *pointer, size_t size, size_t offset)
 {
-	FILE *fp;
-	fp = fopen("invaders.h","rb");
-	fread(RAM, 1, 0x800, fp);
-	fclose(fp);
-	fp = fopen("invaders.g","rb");
-	fread(&RAM[0x800], 1, 0x800, fp);
-	fclose(fp);
-	fp = fopen("invaders.f","rb");
-	fread(&RAM[0x1000], 1, 0x800, fp);
-	fclose(fp);
-	fp = fopen("invaders.e","rb");
-	fread(&RAM[0x1800], 1, 0x800, fp);
-	fclose(fp);
+	size_t ret;
 
-	return 0;
-	
-}*/
+/*	unzFile fp = unzOpen(filename);
+	if(unzLocateFile(fp, filename, 2) == UNZ_OK)
+	{ 
+
+	}
+	else
+	{
+		ret = -1;	
+	}
+	unzClose(fp);*/
+	return -1;
+}
 
